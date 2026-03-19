@@ -5,5 +5,6 @@ data class News(
     val kategori: String,
     val tanggal: String,
     val deskripsi: String = "",
-    val Imageres: Int
+    val Imageres: Int,
+    var isFavorite: Boolean = false
 )

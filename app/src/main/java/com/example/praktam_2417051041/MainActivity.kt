@@ -5,16 +5,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,7 +52,8 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RemotiviApp() {
-    val newsList = NewSource.dummyNews
+    // Gunakan mutableStateListOf agar UI otomatis terupdate saat data berubah
+    val newsList = remember { mutableStateListOf<News>().apply { addAll(NewSource.dummyNews) } }
 
     Scaffold(
         topBar = {
@@ -89,7 +92,13 @@ fun RemotiviApp() {
         ) {
             item {
                 if (newsList.isNotEmpty()) {
-                    HeroHeadline(newsList[0])
+                    HeroHeadline(
+                        news = newsList[0],
+                        onFavoriteClick = {
+                            // Update status favorite pada item headline
+                            newsList[0] = newsList[0].copy(isFavorite = !newsList[0].isFavorite)
+                        }
+                    )
                 }
             }
 
@@ -107,7 +116,14 @@ fun RemotiviApp() {
             }
 
             itemsIndexed(newsList.drop(1)) { index, item ->
-                NewsRowItem(item)
+                // index + 1 karena kita drop item pertama (headline)
+                val actualIndex = index + 1
+                NewsRowItem(
+                    news = item,
+                    onFavoriteClick = {
+                        newsList[actualIndex] = newsList[actualIndex].copy(isFavorite = !newsList[actualIndex].isFavorite)
+                    }
+                )
             }
 
             item {
@@ -137,7 +153,7 @@ fun RemotiviApp() {
 }
 
 @Composable
-fun HeroHeadline(news: News) {
+fun HeroHeadline(news: News, onFavoriteClick: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier
@@ -160,6 +176,7 @@ fun HeroHeadline(news: News) {
                         )
                     )
             )
+
             Text(
                 text = "${news.kategori} | ${news.tanggal}",
                 color = Color.White,
@@ -169,6 +186,20 @@ fun HeroHeadline(news: News) {
                     .align(Alignment.BottomStart)
                     .padding(16.dp)
             )
+
+            IconButton(
+                onClick = onFavoriteClick,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+                    .background(Color.Black.copy(alpha = 0.3f), RoundedCornerShape(50))
+            ) {
+                Icon(
+                    imageVector = if (news.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite",
+                    tint = if (news.isFavorite) Color.Red else Color.White
+                )
+            }
         }
 
         Column(modifier = Modifier.padding(16.dp)) {
@@ -191,7 +222,7 @@ fun HeroHeadline(news: News) {
 }
 
 @Composable
-fun NewsRowItem(news: News) {
+fun NewsRowItem(news: News, onFavoriteClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -216,11 +247,24 @@ fun NewsRowItem(news: News) {
                 color = Color.Black
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = news.tanggal,
-                fontSize = 11.sp,
-                color = Color.Gray
-            )
+            
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = news.tanggal,
+                    fontSize = 11.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Icon(
+                    imageVector = if (news.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite",
+                    tint = if (news.isFavorite) Color.Red else Color.Gray,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable { onFavoriteClick() }
+                )
+            }
         }
         Spacer(modifier = Modifier.width(16.dp))
         Image(
