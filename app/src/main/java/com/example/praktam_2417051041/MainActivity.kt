@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -52,7 +53,6 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RemotiviApp() {
-    // Gunakan mutableStateListOf agar UI otomatis terupdate saat data berubah
     val newsList = remember { mutableStateListOf<News>().apply { addAll(NewSource.dummyNews) } }
 
     Scaffold(
@@ -87,15 +87,15 @@ fun RemotiviApp() {
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(Color.White),
-            verticalArrangement = Arrangement.Top
+                .background(Color(0xFFF8F8F8)),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(bottom = 24.dp)
         ) {
             item {
                 if (newsList.isNotEmpty()) {
                     HeroHeadline(
                         news = newsList[0],
                         onFavoriteClick = {
-                            // Update status favorite pada item headline
                             newsList[0] = newsList[0].copy(isFavorite = !newsList[0].isFavorite)
                         }
                     )
@@ -103,8 +103,32 @@ fun RemotiviApp() {
             }
 
             item {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    HorizontalDivider(thickness = 1.dp, color = Color.Black)
+                Column {
+                    Text(
+                        text = "REKOMENDASI",
+                        fontWeight = FontWeight.Black,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) {
+                        itemsIndexed(newsList) { index, item ->
+                            NewsCardHorizontal(
+                                news = item,
+                                onFavoriteClick = {
+                                    newsList[index] = newsList[index].copy(isFavorite = !newsList[index].isFavorite)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            item {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    HorizontalDivider(thickness = 2.dp, color = Color.Black)
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "ESAI TERBARU",
@@ -116,7 +140,6 @@ fun RemotiviApp() {
             }
 
             itemsIndexed(newsList.drop(1)) { index, item ->
-                // index + 1 karena kita drop item pertama (headline)
                 val actualIndex = index + 1
                 NewsRowItem(
                     news = item,
@@ -130,12 +153,12 @@ fun RemotiviApp() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Button(
                         onClick = {},
-                        shape = RoundedCornerShape(0.dp),
+                        shape = RoundedCornerShape(4.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -143,7 +166,7 @@ fun RemotiviApp() {
                             "LIHAT SEMUA ARTIKEL",
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            modifier = Modifier.padding(vertical = 4.dp)
                         )
                     }
                 }
@@ -154,133 +177,209 @@ fun RemotiviApp() {
 
 @Composable
 fun HeroHeadline(news: News, onFavoriteClick: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(240.dp)
-        ) {
-            Image(
-                painter = painterResource(id = news.Imageres),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(0.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.6f)),
-                            startY = 400f
-                        )
-                    )
-            )
-
-            Text(
-                text = "${news.kategori} | ${news.tanggal}",
-                color = Color.White,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp)
-            )
-
-            IconButton(
-                onClick = onFavoriteClick,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp)
-                    .background(Color.Black.copy(alpha = 0.3f), RoundedCornerShape(50))
+                    .fillMaxWidth()
+                    .height(240.dp)
             ) {
-                Icon(
-                    imageVector = if (news.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Favorite",
-                    tint = if (news.isFavorite) Color.Red else Color.White
+                Image(
+                    painter = painterResource(id = news.Imageres),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
+                                startY = 350f
+                            )
+                        )
+                )
+
+                Text(
+                    text = "${news.kategori} | ${news.tanggal}",
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(16.dp)
+                )
+
+                IconButton(
+                    onClick = onFavoriteClick,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .background(Color.Black.copy(alpha = 0.4f), RoundedCornerShape(50))
+                ) {
+                    Icon(
+                        imageVector = if (news.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = if (news.isFavorite) Color.Red else Color.White
+                    )
+                }
+            }
+
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = news.judul,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    lineHeight = 28.sp,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = news.deskripsi,
+                    fontSize = 14.sp,
+                    color = Color.DarkGray,
+                    lineHeight = 20.sp,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedButton(
+                    onClick = {},
+                    shape = RoundedCornerShape(4.dp),
+                    border = ButtonDefaults.outlinedButtonBorder(enabled = true)
+                ) {
+                    Text("BACA SELENGKAPNYA", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                }
             }
         }
+    }
+}
 
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = news.judul,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.ExtraBold,
-                lineHeight = 30.sp,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = news.deskripsi,
-                fontSize = 15.sp,
-                color = Color.DarkGray,
-                lineHeight = 22.sp
-            )
+@Composable
+fun NewsCardHorizontal(news: News, onFavoriteClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .width(160.dp)
+            .height(210.dp),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column {
+            Box(modifier = Modifier.height(100.dp).fillMaxWidth()) {
+                Image(
+                    painter = painterResource(id = news.Imageres),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                IconButton(
+                    onClick = onFavoriteClick,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .size(30.dp)
+                        .padding(4.dp)
+                        .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(50))
+                ) {
+                    Icon(
+                        imageVector = if (news.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = if (news.isFavorite) Color.Red else Color.Gray,
+                        modifier = Modifier.size(14.dp)
+                    )
+                }
+            }
+            Column(modifier = Modifier.padding(10.dp)) {
+                Text(
+                    text = news.kategori,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Red
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = news.judul,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 16.sp,
+                    color = Color.Black
+                )
+            }
         }
     }
 }
 
 @Composable
 fun NewsRowItem(news: News, onFavoriteClick: () -> Unit) {
-    Row(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.Top
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = news.kategori,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Red
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = news.judul,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                lineHeight = 20.sp,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = news.tanggal,
-                    fontSize = 11.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.weight(1f)
-                )
-
-                Icon(
-                    imageVector = if (news.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Favorite",
-                    tint = if (news.isFavorite) Color.Red else Color.Gray,
-                    modifier = Modifier
-                        .size(20.dp)
-                        .clickable { onFavoriteClick() }
-                )
-            }
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Image(
-            painter = painterResource(id = news.Imageres),
-            contentDescription = null,
+        Row(
             modifier = Modifier
-                .size(100.dp)
-                .clip(RoundedCornerShape(4.dp)),
-            contentScale = ContentScale.Crop
-        )
+                .padding(12.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = news.kategori,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Red
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = news.judul,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    lineHeight = 19.sp,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = news.tanggal,
+                        fontSize = 10.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Icon(
+                        imageVector = if (news.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = if (news.isFavorite) Color.Red else Color.Gray,
+                        modifier = Modifier
+                            .size(18.dp)
+                            .clickable { onFavoriteClick() }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Image(
+                painter = painterResource(id = news.Imageres),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(85.dp)
+                    .clip(RoundedCornerShape(6.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
     }
-    HorizontalDivider(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        thickness = 0.5.dp,
-        color = Color.LightGray
-    )
 }
 
 @Preview(showBackground = true, showSystemUi = true)
