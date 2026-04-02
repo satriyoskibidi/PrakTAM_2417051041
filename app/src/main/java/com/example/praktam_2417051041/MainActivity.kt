@@ -22,14 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.praktam_2417051041.ui.theme.PrakTAM_2417051041Theme
+import com.example.praktam_2417051041.ui.theme.RemotiviTheme
 import Model.News
 import Model.NewSource
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,10 +37,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PrakTAM_2417051041Theme {
+            RemotiviTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     RemotiviApp()
                 }
@@ -61,24 +60,23 @@ fun RemotiviApp() {
                 title = {
                     Text(
                         "REMOTIVI",
-                        fontWeight = FontWeight.Black,
+                        style = MaterialTheme.typography.titleLarge,
                         letterSpacing = 3.sp,
-                        fontSize = 22.sp,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.secondaryz
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = {}) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.Black)
+                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = MaterialTheme.colorScheme.secondary)
                     }
                 },
                 actions = {
                     IconButton(onClick = {}) {
-                        Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.Black)
+                        Icon(Icons.Default.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.secondary)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         }
@@ -87,7 +85,7 @@ fun RemotiviApp() {
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(Color(0xFFF8F8F8)),
+                .background(MaterialTheme.colorScheme.background),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(bottom = 24.dp)
         ) {
@@ -106,8 +104,7 @@ fun RemotiviApp() {
                 Column {
                     Text(
                         text = "REKOMENDASI",
-                        fontWeight = FontWeight.Black,
-                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                     LazyRow(
@@ -128,13 +125,12 @@ fun RemotiviApp() {
 
             item {
                 Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    HorizontalDivider(thickness = 2.dp, color = Color.Black)
+                    HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.secondary)
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "ESAI TERBARU",
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 14.sp,
-                        color = Color.Red
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -159,13 +155,13 @@ fun RemotiviApp() {
                     Button(
                         onClick = {},
                         shape = RoundedCornerShape(4.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
                             "LIHAT SEMUA ARTIKEL",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.padding(vertical = 4.dp)
                         )
                     }
@@ -180,7 +176,7 @@ fun HeroHeadline(news: News, onFavoriteClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(0.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
@@ -200,7 +196,7 @@ fun HeroHeadline(news: News, onFavoriteClick: () -> Unit) {
                         .fillMaxSize()
                         .background(
                             Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
+                                colors = listOf(MaterialTheme.colorScheme.surface.copy(alpha = 0f), MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)),
                                 startY = 350f
                             )
                         )
@@ -208,9 +204,8 @@ fun HeroHeadline(news: News, onFavoriteClick: () -> Unit) {
 
                 Text(
                     text = "${news.kategori} | ${news.tanggal}",
-                    color = Color.White,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         .padding(16.dp)
@@ -221,12 +216,12 @@ fun HeroHeadline(news: News, onFavoriteClick: () -> Unit) {
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(8.dp)
-                        .background(Color.Black.copy(alpha = 0.4f), RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f), RoundedCornerShape(50))
                 ) {
                     Icon(
                         imageVector = if (news.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
-                        tint = if (news.isFavorite) Color.Red else Color.White
+                        tint = if (news.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -234,17 +229,14 @@ fun HeroHeadline(news: News, onFavoriteClick: () -> Unit) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = news.judul,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    lineHeight = 28.sp,
-                    color = Color.Black
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.secondary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = news.deskripsi,
-                    fontSize = 14.sp,
-                    color = Color.DarkGray,
-                    lineHeight = 20.sp,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -254,7 +246,7 @@ fun HeroHeadline(news: News, onFavoriteClick: () -> Unit) {
                     shape = RoundedCornerShape(4.dp),
                     border = ButtonDefaults.outlinedButtonBorder(enabled = true)
                 ) {
-                    Text("BACA SELENGKAPNYA", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    Text("BACA SELENGKAPNYA", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary)
                 }
             }
         }
@@ -268,7 +260,7 @@ fun NewsCardHorizontal(news: News, onFavoriteClick: () -> Unit) {
             .width(160.dp)
             .height(210.dp),
         shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
@@ -285,12 +277,12 @@ fun NewsCardHorizontal(news: News, onFavoriteClick: () -> Unit) {
                         .align(Alignment.TopEnd)
                         .size(30.dp)
                         .padding(4.dp)
-                        .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f), RoundedCornerShape(50))
                 ) {
                     Icon(
                         imageVector = if (news.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
-                        tint = if (news.isFavorite) Color.Red else Color.Gray,
+                        tint = if (news.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                         modifier = Modifier.size(14.dp)
                     )
                 }
@@ -298,19 +290,16 @@ fun NewsCardHorizontal(news: News, onFavoriteClick: () -> Unit) {
             Column(modifier = Modifier.padding(10.dp)) {
                 Text(
                     text = news.kategori,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Red
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = news.judul,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleSmall,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
-                    lineHeight = 16.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
         }
@@ -324,7 +313,7 @@ fun NewsRowItem(news: News, onFavoriteClick: () -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -335,34 +324,31 @@ fun NewsRowItem(news: News, onFavoriteClick: () -> Unit) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = news.kategori,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Red
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = news.judul,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = 19.sp,
+                    style = MaterialTheme.typography.titleSmall,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.secondary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = news.tanggal,
-                        fontSize = 10.sp,
-                        color = Color.Gray,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                         modifier = Modifier.weight(1f)
                     )
 
                     Icon(
                         imageVector = if (news.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
-                        tint = if (news.isFavorite) Color.Red else Color.Gray,
+                        tint = if (news.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                         modifier = Modifier
                             .size(18.dp)
                             .clickable { onFavoriteClick() }
@@ -385,10 +371,10 @@ fun NewsRowItem(news: News, onFavoriteClick: () -> Unit) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun RemotiviAppPreview() {
-    PrakTAM_2417051041Theme {
+    RemotiviTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = Color.White
+            color = MaterialTheme.colorScheme.background
         ) {
             RemotiviApp()
         }
