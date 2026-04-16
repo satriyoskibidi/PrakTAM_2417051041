@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,6 +31,8 @@ import com.example.praktam_2417051041.ui.theme.RemotiviTheme
 import Model.News
 import Model.NewSource
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +54,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun RemotiviApp() {
     val newsList = remember { mutableStateListOf<News>().apply { addAll(NewSource.dummyNews) } }
+    var isLoading by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -62,7 +66,7 @@ fun RemotiviApp() {
                         "REMOTIVI",
                         style = MaterialTheme.typography.titleLarge,
                         letterSpacing = 3.sp,
-                        color = MaterialTheme.colorScheme.secondaryz
+                        color = MaterialTheme.colorScheme.secondary
                     )
                 },
                 navigationIcon = {
@@ -79,6 +83,9 @@ fun RemotiviApp() {
                     containerColor = MaterialTheme.colorScheme.surface
                 )
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
     ) { innerPadding ->
         LazyColumn(
@@ -153,17 +160,44 @@ fun RemotiviApp() {
                     contentAlignment = Alignment.Center
                 ) {
                     Button(
-                        onClick = {},
+                        onClick = {
+                            coroutineScope.launch {
+                                isLoading = true
+                                delay(2000L)
+                                isLoading = false
+                                snackbarHostState.showSnackbar(
+                                    message = "Semua artikel berhasil dimuat!",
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        },
+                        enabled = !isLoading,
                         shape = RoundedCornerShape(4.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            "LIHAT SEMUA ARTIKEL",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        )
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(18.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Memproses...",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        } else {
+                            Text(
+                                "LIHAT SEMUA ARTIKEL",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
                 }
             }
@@ -336,7 +370,7 @@ fun NewsRowItem(news: News, onFavoriteClick: () -> Unit) {
                     color = MaterialTheme.colorScheme.secondary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = news.tanggal,
